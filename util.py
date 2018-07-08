@@ -1,5 +1,6 @@
 import os
 import cv2
+import click
 import setting
 import numpy as np
 
@@ -87,3 +88,121 @@ def show_image_grid(grid, scale=0.5):
     cv2.imshow('image grid', grid)
     cv2.waitKey(0)
 
+
+def check_platform():
+    """
+    Check platform
+    """
+    import platform
+    if platform.system() == 'Darwin':
+        warning('[Notice] you need to run this program as root user in macOS')
+
+
+def confirm(text, fg='blue', **kwargs):
+    """
+    Confirm prompt
+
+    :param text: prompt text
+    :type text: str
+    :param fg: foreground color
+    :type fg: str
+    :param kwargs: other arguments
+    :return: confirmation result
+    :rtype: str
+    """
+    return click.confirm(
+        click.style('> {}'.format(text), fg=fg, bold=True), **kwargs)
+
+
+def confirmation(text, **confirm_args):
+    """
+    Decorator for confirmation (Yes for running function, No for not)
+
+    :param text: prompt text
+    :type text: str
+    :param confirm_args: arguments for confirmation
+    :return: confirmation result
+    :rtype: str
+    """
+
+    def real_decorator(func):
+        def wrapper(*args, **kwargs):
+            if confirm(text, **confirm_args):
+                func(*args, **kwargs)
+
+        return wrapper
+
+    return real_decorator
+
+
+def prompt(text, **kwargs):
+    """
+    Popup a prompt
+
+    :param text: prompt text
+    :type text: str
+    :param kwargs: other arguments
+    :return: user input
+    :rtype: str
+    """
+    return click.prompt(
+        click.style('> {}'.format(text), fg='blue', bold=True), **kwargs)
+
+
+def choice(text, choices, **kwargs):
+    """
+    Popup a choice prompt
+
+    :param text: prompt text
+    :type text: str
+    :param choices: choices for user to choose
+    :type choices: str
+    :param kwargs: other arguments
+    :type kwargs: dict
+    :return: user choice
+    :rtype: str
+    """
+    return click.prompt(
+        click.style('> {}'.format(text), fg='blue', bold=True),
+        type=click.Choice(choices),
+        **kwargs)
+
+
+def status(text):
+    """
+    Print running status
+
+    :param text: status text
+    :type text: str
+    """
+    click.secho('{}'.format(text), fg='blue', bold=True)
+
+
+def info(text):
+    """
+    Print running info
+
+    :param text: status text
+    :type text: str
+    """
+    click.secho('{}'.format(text), fg='green', bold=True)
+
+
+def warning(text):
+    """
+    Print warning message
+
+    :param text: warning message
+    :type text: str
+    """
+    click.secho('{}'.format(text), fg='yellow', bold=True)
+
+
+def error(text):
+    """
+    Print error message
+
+    :param text: error message
+    :type text: str
+    """
+    click.secho('{}'.format(text), fg='red', bold=True)
