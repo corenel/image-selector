@@ -22,6 +22,6 @@ if __name__ == '__main__':
         elif keycode == setting.VALID_KEYS['process']:
             print(invalid_list)
 
-        images = util.read_images(image_list, 1, current_index)
+        images = util.read_images(image_list, 1, current_index, invalid_list)
         grid = util.create_image_grid(images)
         keycode = util.show_image_grid(grid)

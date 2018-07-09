@@ -42,24 +42,30 @@ def pop_images(image_list, image_num):
     return images
 
 
-def read_images(image_list, image_num, start_idx=0):
+def read_images(image_list, image_num, start_idx=0, invalid_list=None):
     """
     Read numbers of images from list
 
     :param image_list: list of image files
-    :type image_list: list[str]
+    :type image_list: List[str]
     :param image_num: number of images to read
     :type image_num: int
     :param start_idx: start index of image to read
     :type start_idx: int
+    :param invalid_list: list of invalid image (convert to grayscale)
+    :type invalid_list: List[int]
     :return: image objects
     :rtype: np.ndarray
     """
     image_num = min(image_num, len(image_list))
     images = None
     for i in range(image_num):
+        image_idx = start_idx + i
         image_filename = image_list[start_idx + i]
         image_temp = cv2.imread(os.path.join(setting.IMAGE_DIR, image_filename))
+        if invalid_list is not None and image_idx in invalid_list:
+            gray_image = cv2.cvtColor(image_temp, cv2.COLOR_BGR2GRAY)
+            image_temp = np.stack((gray_image,) * 3, axis=-1)
         if images is None:
             images = np.expand_dims(image_temp, axis=0)
         else:
