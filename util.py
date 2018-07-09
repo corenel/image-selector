@@ -18,9 +18,9 @@ def get_image_list(path):
             if os.path.splitext(f)[1] in setting.IMAGE_EXT]
 
 
-def read_images(image_list, image_num):
+def pop_images(image_list, image_num):
     """
-    Read numbers of images from list
+    Read numbers of images from list and pop
 
     :param image_list: list of image files
     :type image_list: list[str]
@@ -33,6 +33,32 @@ def read_images(image_list, image_num):
     images = None
     for i in range(image_num):
         image_filename = image_list.pop()
+        image_temp = cv2.imread(os.path.join(setting.IMAGE_DIR, image_filename))
+        if images is None:
+            images = np.expand_dims(image_temp, axis=0)
+        else:
+            images = np.concatenate((images, np.expand_dims(image_temp, axis=0)),
+                                    axis=0)
+    return images
+
+
+def read_images(image_list, image_num, start_idx=0):
+    """
+    Read numbers of images from list
+
+    :param image_list: list of image files
+    :type image_list: list[str]
+    :param image_num: number of images to read
+    :type image_num: int
+    :param start_idx: start index of image to read
+    :type start_idx: int
+    :return: image objects
+    :rtype: np.ndarray
+    """
+    image_num = min(image_num, len(image_list))
+    images = None
+    for i in range(image_num):
+        image_filename = image_list[start_idx + i]
         image_temp = cv2.imread(os.path.join(setting.IMAGE_DIR, image_filename))
         if images is None:
             images = np.expand_dims(image_temp, axis=0)
@@ -66,7 +92,6 @@ def create_image_grid(images, grid_size=None):
     for idx in range(num):
         x = (idx % grid_w) * img_w
         y = (idx // grid_w) * img_h
-        print(x, y)
         grid[y: y + img_h, x: x + img_w, ...] = images[idx]
     return grid
 
@@ -79,6 +104,8 @@ def show_image_grid(grid, scale=0.5):
     :type grid: np.ndarray
     :param scale: image scale factor
     :type scale: float
+    :return: pressed key
+    :rtype: int
     """
     if scale != 1.0:
         scale_w = int(scale * grid.shape[1])
@@ -86,16 +113,18 @@ def show_image_grid(grid, scale=0.5):
         grid = cv2.resize(grid, (scale_w, scale_h))
 
     cv2.imshow('image grid', grid)
-    cv2.waitKey(0)
+    keycode = cv2.waitKey(0)
+
+    return keycode
 
 
-def check_platform():
-    """
-    Check platform
-    """
-    import platform
-    if platform.system() == 'Darwin':
-        warning('[Notice] you need to run this program as root user in macOS')
+# def check_platform():
+#     """
+#     Check platform
+#     """
+#     import platform
+#     if platform.system() == 'Darwin':
+#         warning('[Notice] you need to run this program as root user in macOS')
 
 
 def confirm(text, fg='blue', **kwargs):
@@ -156,9 +185,8 @@ def choice(text, choices, **kwargs):
     :param text: prompt text
     :type text: str
     :param choices: choices for user to choose
-    :type choices: str
+    :type choices: List[str}
     :param kwargs: other arguments
-    :type kwargs: dict
     :return: user choice
     :rtype: str
     """

@@ -1,31 +1,27 @@
-import cv2
+import sys
 import util
 import setting
-from pynput import keyboard
-
-
-def on_press(key):
-    try:
-        print('alphanumeric key {0} pressed'.format(key.char))
-    except AttributeError:
-        print('special key {0} pressed'.format(key))
-
-
-def on_release(key):
-    print('{0} released'.format(key))
-    if key == keyboard.Key.esc:
-        # Stop listener
-        return False
-
 
 if __name__ == '__main__':
-    util.check_platform()
-    # image_list = util.get_image_list(setting.IMAGE_DIR)
-    # images = util.read_images(image_list, 6)
-    # grid = util.create_image_grid(images)
-    # util.show_image_grid(grid)
-    # Collect events until released
-    with keyboard.Listener(
-            on_press=on_press,
-            on_release=on_release) as listener:
-        listener.join()
+    # util.check_platform()
+
+    image_list = util.get_image_list(setting.IMAGE_DIR)
+    invalid_list = []
+    current_index = 0
+    keycode = 255
+
+    while keycode != setting.VALID_KEYS['exit']:
+        if keycode == setting.VALID_KEYS['discard'] and current_index not in invalid_list:
+            invalid_list.append(current_index)
+        elif keycode == setting.VALID_KEYS['reserve'] and current_index in invalid_list:
+            invalid_list.remove(current_index)
+        elif keycode == setting.VALID_KEYS['prev']:
+            current_index = max(0, current_index - 1)
+        elif keycode == setting.VALID_KEYS['next']:
+            current_index = min(len(image_list) - 1, current_index + 1)
+        elif keycode == setting.VALID_KEYS['process']:
+            print(invalid_list)
+
+        images = util.read_images(image_list, 1, current_index)
+        grid = util.create_image_grid(images)
+        keycode = util.show_image_grid(grid)
