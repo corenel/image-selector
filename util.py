@@ -1,8 +1,11 @@
+import numpy as np
+
 import os
 import cv2
 import click
+import shutil
+
 import setting
-import numpy as np
 
 
 def get_image_list(path):
@@ -47,13 +50,13 @@ def read_images(image_list, image_num, start_idx=0, invalid_list=None):
     Read numbers of images from list
 
     :param image_list: list of image files
-    :type image_list: List[str]
+    :type image_list: list[str]
     :param image_num: number of images to read
     :type image_num: int
     :param start_idx: start index of image to read
     :type start_idx: int
     :param invalid_list: list of invalid image (convert to grayscale)
-    :type invalid_list: List[int]
+    :type invalid_list: list[int]
     :return: image objects
     :rtype: np.ndarray
     """
@@ -122,6 +125,48 @@ def show_image_grid(grid, scale=0.5):
     keycode = cv2.waitKey(0)
 
     return keycode
+
+
+def process_verified_images(image_list, invalid_list, valid_list):
+    """
+    Move verified images to specific directory
+
+    :param image_list: list of all images
+    :type image_list: list[str]
+    :param invalid_list: list of invalid image indices
+    :type invalid_list: list[int]
+    :param valid_list: list of valid image indices
+    :type valid_list: list[int]
+    """
+
+    def move_images(index_list, dst):
+        """
+        Move images to given directory
+
+        :param index_list: list of image indices
+        :type index_list: list[int]
+        :param dst: destination
+        :type dst: str
+        :return:
+        :rtype:
+        """
+        if not os.path.exists(dst):
+            os.makedirs(dst)
+        for idx in index_list:
+            image_filename = image_list[idx]
+            src_path = os.path.join(setting.IMAGE_DIR, image_filename)
+            dst_path = os.path.join(dst, image_filename)
+            print('move {} to {}'.format(image_filename, dst_path))
+            shutil.move(src_path, dst_path)
+
+    move_images(invalid_list, setting.INVALID_IMAGE_DIR)
+    move_images(valid_list, setting.VALID_IMAGE_DIR)
+
+    filenames = [image_list[idx] for idx in invalid_list + valid_list]
+    for filename in filenames:
+        image_list.remove(filename)
+    invalid_list.clear()
+    valid_list.clear()
 
 
 # def check_platform():
