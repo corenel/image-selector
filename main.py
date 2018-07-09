@@ -38,9 +38,6 @@ if __name__ == '__main__':
                 valid_list.append(current_index)
             current_index = min(len(image_list) - 1, current_index + 1)
 
-        print(image_list[current_index])
-        print(image_list)
-
         images = util.read_images(image_list, 1, current_index, invalid_list)
         grid = util.create_image_grid(images)
         keycode = util.show_image_grid(grid)
