@@ -158,6 +158,12 @@ def process_verified_images(image_list, invalid_list, valid_list):
             dst_path = os.path.join(dst, image_filename)
             print('move {} to {}'.format(image_filename, dst_path))
             shutil.move(src_path, dst_path)
+            for ext in setting.OTHER_EXT:
+                src_other = os.path.splitext(src_path)[0] + ext
+                if os.path.exists(src_other):
+                    dst_other = os.path.splitext(dst_path)[0] + ext
+                    print('move {} to {}'.format(os.path.basename(src_other), dst_path))
+                    shutil.move(src_other, dst_other)
 
     move_images(invalid_list, setting.INVALID_IMAGE_DIR)
     move_images(valid_list, setting.VALID_IMAGE_DIR)
@@ -167,6 +173,55 @@ def process_verified_images(image_list, invalid_list, valid_list):
         image_list.remove(filename)
     invalid_list.clear()
     valid_list.clear()
+
+
+def update_list(list_in, list_out, current_index):
+    """
+    Update list A and remove element from list B
+
+    :param list_in: list A to append element
+    :type list_in: list[int]
+    :param list_out: list B to remove element
+    :type list_out: list[int]
+    :param current_index: image index
+    :type current_index: int
+    """
+    if current_index not in list_in:
+        list_in.append(current_index)
+    if current_index in list_out:
+        list_out.remove(current_index)
+
+
+def valid_image(invalid_list, valid_list, current_index):
+    """
+    Append fresh image to valid list
+
+    :param invalid_list: list of invalid image indices
+    :type invalid_list: list[int]
+    :param valid_list: list of valid image indices
+    :type valid_list: list[int]
+    :param current_index: image index
+    :type current_index: int
+    """
+    if current_index not in valid_list and current_index not in invalid_list:
+        valid_list.append(current_index)
+
+
+def valid_images(invalid_list, valid_list, current_index, num_images):
+    """
+    Append fresh image to valid list
+
+    :param invalid_list: list of invalid image indices
+    :type invalid_list: list[int]
+    :param valid_list: list of valid image indices
+    :type valid_list: list[int]
+    :param current_index: image index
+    :type current_index: int
+    :param num_images: number of images to add
+    :type num_images: int
+    """
+    for i in range(num_images):
+        valid_image(invalid_list, valid_list, current_index + i)
 
 
 # def check_platform():
