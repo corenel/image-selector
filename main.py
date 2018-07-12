@@ -19,12 +19,19 @@ if __name__ == '__main__':
                 util.update_list(invalid_list, valid_list, current_index)
             elif keycode == setting.VALID_KEYS['reserve']:
                 util.update_list(valid_list, invalid_list, current_index)
-        elif keycode in setting.GRID_KEYS:
+        elif keycode in setting.GRID_KEYS or \
+                keycode == setting.VALID_KEYS['up'] or \
+                keycode == setting.VALID_KEYS['down']:
             for i in range(setting.NUM_DISPLAY):
                 if current_index + i not in invalid_list and current_index + i not in valid_list:
                     valid_list.append(current_index + i)
             grid_index = keycode - 49 + current_index
-            print('grid: {}'.format(grid_index))
+            # special shortcut for grid of only 2 image
+            if keycode == setting.VALID_KEYS['down']:
+                grid_index = current_index
+            elif keycode == setting.VALID_KEYS['up']:
+                grid_index = current_index + 1
+            # print('grid: {}'.format(grid_index))
             if grid_index in invalid_list:
                 util.update_list(valid_list, invalid_list, grid_index)
             elif grid_index in valid_list:
@@ -41,17 +48,19 @@ if __name__ == '__main__':
         elif keycode == setting.VALID_KEYS['prev']:
             current_index = max(0, current_index - setting.NUM_DISPLAY)
         elif keycode == setting.VALID_KEYS['next']:
-            current_index = min(len(image_list) - 1, current_index + setting.NUM_DISPLAY)
+            current_index = min(
+                len(image_list) - 1, current_index + setting.NUM_DISPLAY)
 
         # refresh display
         images = util.read_images(image_list, setting.NUM_DISPLAY,
                                   current_index, invalid_list)
         grid = util.create_image_grid(images)
-        util.valid_images(invalid_list, valid_list, current_index, setting.NUM_DISPLAY)
+        util.valid_images(invalid_list, valid_list, current_index,
+                          setting.NUM_DISPLAY)
         keycode = util.show_image_grid(grid)
 
         # debug
-        print('curr: {}'.format(current_index))
-        print('invalid: {}'.format(invalid_list))
-        print('valid: {}'.format(valid_list))
-
+        # print(keycode)
+        # print('curr: {}'.format(current_index))
+        # print('invalid: {}'.format(invalid_list))
+        # print('valid: {}'.format(valid_list))
