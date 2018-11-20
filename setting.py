@@ -1,7 +1,7 @@
 import os
 
 # path
-IMAGE_DIR = '/Volumes/Document/Datasets/Crypko-570k'
+IMAGE_DIR = '/Volumes/Document/Datasets/glow/999-fid/2063-reconstruction'
 IMAGE_EXT = ['.jpg', '.png']
 OTHER_EXT = ['.xml']
 VALID_IMAGE_DIR = os.path.join(IMAGE_DIR, 'valid')
@@ -9,6 +9,7 @@ INVALID_IMAGE_DIR = os.path.join(IMAGE_DIR, 'invalid')
 
 # display
 NUM_DISPLAY = 2
+DSIPALY_SCALE = 1.0
 
 # button
 VALID_KEYS = {

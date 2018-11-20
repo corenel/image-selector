@@ -57,7 +57,7 @@ if __name__ == '__main__':
         grid = util.create_image_grid(images)
         util.valid_images(invalid_list, valid_list, current_index,
                           setting.NUM_DISPLAY)
-        keycode = util.show_image_grid(grid)
+        keycode = util.show_image_grid(grid, scale=setting.DSIPALY_SCALE)
 
         # debug
         # print(keycode)
