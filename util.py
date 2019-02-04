@@ -17,8 +17,8 @@ def get_image_list(path):
     :return: list of image files
     :rtype: list[str]
     """
-    return [f for f in os.listdir(path)
-            if os.path.splitext(f)[1] in setting.IMAGE_EXT]
+    return sorted([f for f in os.listdir(path)
+            if os.path.splitext(f)[1] in setting.IMAGE_EXT])
 
 
 def pop_images(image_list, image_num):
